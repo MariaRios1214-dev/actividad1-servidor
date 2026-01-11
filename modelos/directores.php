@@ -72,7 +72,7 @@ class Directores {
             $stmt->execute([':id' => $id]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al obtener director por ID: " . $e->getMessage());
+            error_log("Error al obtener director por ID");
             return null;
         }
     }
@@ -80,23 +80,16 @@ class Directores {
     public function guardar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                INSERT INTO directores (nombre, apellidos, fecha_nacimiento, nacionalidad)
-                VALUES (:nombre, :apellidos, :fecha_nacimiento, :nacionalidad)
-            ");
+            $stmt = $pdo->prepare("INSERT INTO directores (nombre, apellidos, fecha_nacimiento, nacionalidad)
+                VALUES (:nombre, :apellidos, :fecha_nacimiento, :nacionalidad)");
             
-            $result = $stmt->execute([
+            return $stmt->execute([
                 ':nombre' => $this->nombre,
                 ':apellidos' => $this->apellidos,
                 ':fecha_nacimiento' => $this->fecha_nacimiento,
                 ':nacionalidad' => $this->nacionalidad,
             ]);
             
-            if ($result) {
-                $this->id = $pdo->lastInsertId();
-            }
-            
-            return $result;
         } catch (PDOException $e) {
             error_log("Error al guardar director");
             return false;
@@ -106,14 +99,12 @@ class Directores {
     public function actualizar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                UPDATE directores
+            $stmt = $pdo->prepare("UPDATE directores
                 SET nombre = :nombre,
                     apellidos = :apellidos,
                     fecha_nacimiento = :fecha_nacimiento,
                     nacionalidad = :nacionalidad
-                WHERE id = :id
-            ");
+                WHERE id = :id");
             
             return $stmt->execute([
                 ':nombre' => $this->nombre,

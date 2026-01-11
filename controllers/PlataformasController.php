@@ -6,12 +6,12 @@ class PlataformasController
     public function index()
     {
         $rows = Plataformas::obtenerTodos();
-        require __DIR__ . '/../views/plataformas/index.php';
+        require_once __DIR__ . '/../views/plataformas/index.php';
     }
 
     public function create()
     {
-        require __DIR__ . '/../views/plataformas/create.php';
+        require_once __DIR__ . '/../views/plataformas/create.php';
     }
 
     public function store()

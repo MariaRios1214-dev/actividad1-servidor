@@ -50,20 +50,11 @@ class Plataformas {
     public function guardar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                INSERT INTO plataformas (nombre)
-                VALUES (:nombre)
-            ");
+            $stmt = $pdo->prepare("INSERT INTO plataformas (nombre) VALUES (:nombre)");
             
-            $result = $stmt->execute([
+            return $stmt->execute([
                 ':nombre' => $this->nombre,
             ]);
-            
-            if ($result) {
-                $this->id = $pdo->lastInsertId();
-            }
-            
-            return $result;
         } catch (PDOException $e) {
             error_log("Error al guardar plataforma");
             return false;
@@ -73,11 +64,8 @@ class Plataformas {
     public function actualizar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                UPDATE plataformas
-                SET nombre = :nombre
-                WHERE id = :id
-            ");
+            $stmt = $pdo->prepare("UPDATE plataformas SET nombre = :nombre
+                WHERE id = :id");
             
             return $stmt->execute([
                 ':nombre' => $this->nombre,
