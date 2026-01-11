@@ -60,22 +60,14 @@ class Idiomas {
     public function guardar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                INSERT INTO idiomas (nombre, iso_code)
-                VALUES (:nombre, :iso_code)
-            ");
+            $stmt = $pdo->prepare("INSERT INTO idiomas (nombre, iso_code)
+                VALUES (:nombre, :iso_code)");
             
-            $result = $stmt->execute([
+            return $stmt->execute([
                 ':nombre' => $this->nombre,
                 ':iso_code' => $this->iso_code,
             ]);
-            
-            if ($result) {
-                $this->id = $pdo->lastInsertId();
-            }
-            
-            return $result;
-        } catch (PDOException $e) {
+            } catch (PDOException $e) {
             error_log("Error al guardar idioma");
             return false;
         }
@@ -84,12 +76,10 @@ class Idiomas {
     public function actualizar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("
-                UPDATE idiomas
+            $stmt = $pdo->prepare("UPDATE idiomas
                 SET nombre = :nombre,
                     iso_code = :iso_code
-                WHERE id = :id
-            ");
+                WHERE id = :id");
             
             return $stmt->execute([
                 ':nombre' => $this->nombre,

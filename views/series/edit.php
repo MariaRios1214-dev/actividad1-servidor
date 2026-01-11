@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <a href="index.php?controller=series&action=index" class="btn-home">← Volver</a>
+    <a href="index.php?controller=series&action=index" class="btn-home">Volver</a>
     <h1>Editar serie</h1>
 
     <?php if (!empty($_GET['error'])): ?>

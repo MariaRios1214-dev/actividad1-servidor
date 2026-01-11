@@ -63,8 +63,7 @@ class Actores{
     
     public function guardar() {
         $pdo = db_connect();
-        $stmt = $pdo->prepare("
-            INSERT INTO actores (nombre, apellidos, fecha_nacimiento, nacionalidad)
+        $stmt = $pdo->prepare("INSERT INTO actores (nombre, apellidos, fecha_nacimiento, nacionalidad)
             VALUES (:nombre, :apellidos, :fecha_nacimiento, :nacionalidad)
         ");
         
@@ -78,8 +77,7 @@ class Actores{
     
     public function actualizar() {
         $pdo = db_connect();
-        $stmt = $pdo->prepare("
-            UPDATE actores
+        $stmt = $pdo->prepare("UPDATE actores
             SET nombre = :nombre,
                 apellidos = :apellidos,
                 fecha_nacimiento = :fecha_nacimiento,

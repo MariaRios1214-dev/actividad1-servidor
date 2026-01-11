@@ -5,6 +5,11 @@ error_reporting(E_ALL);
 $controller = $_GET['controller'] ?? 'home';
 $action     = $_GET['action'] ?? 'index';
 
+if ($controller === 'home') {
+    require_once __DIR__ . '/views/home.php';
+    exit;
+}
+
 $map = [
     'plataformas' => 'PlataformasController',
     'idiomas'     => 'IdiomasController',

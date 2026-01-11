@@ -9,7 +9,7 @@
 </head>
 
 <body>
-    <a href="index.php" class="btn-home">← Home</a>
+    <a href="index.php" class="btn-home">Home</a>
     <a href="index.php?controller=series&action=create" class="btn-nuevo">+ Nueva serie</a>
     
     <h1>Series</h1>
