@@ -1,33 +1,20 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../modelos/series.php';
+require_once __DIR__ . '/../modelos/plataformas.php';
+require_once __DIR__ . '/../modelos/directores.php';
 
 class SeriesController
 {
-
     public function index()
     {
-        $pdo = db_connect();
-
-        $sql = "
-      SELECT s.id, s.titulo,
-             p.nombre AS plataforma,
-             d.nombre || ' ' || d.apellidos AS director
-      FROM series s
-      JOIN plataformas p ON p.id = s.plataforma_id
-      JOIN directores d ON d.id = s.director_id
-      ORDER BY s.id DESC
-    ";
-
-        $rows = $pdo->query($sql)->fetchAll();
+        $rows = Series::obtenerTodos();
         require __DIR__ . '/../views/series/index.php';
     }
 
     public function create()
     {
-        $pdo = db_connect();
-
-        $plataformas = $pdo->query("SELECT id, nombre FROM plataformas ORDER BY nombre")->fetchAll();
-        $directores  = $pdo->query("SELECT id, nombre, apellidos FROM directores ORDER BY nombre")->fetchAll();
+        $plataformas = Plataformas::obtenerTodos();
+        $directores  = Directores::obtenerTodos();
 
         require __DIR__ . '/../views/series/create.php';
     }
@@ -38,21 +25,15 @@ class SeriesController
         $plataforma_id = (int)($_POST['plataforma_id'] ?? 0);
         $director_id   = (int)($_POST['director_id'] ?? 0);
 
+        $serie = new Series(null, $titulo, $plataforma_id, $director_id);
+
         if ($titulo === '' || $plataforma_id <= 0 || $director_id <= 0) {
-            header("Location: index.php?controller=series&action=create&error=Datos+obligatorios");
+            header("Location: index.php?controller=series&action=create&error=Todos+los+campos+son+obligatorios");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("INSERT INTO series (titulo, plataforma_id, director_id)
-                           VALUES (:titulo, :plataforma_id, :director_id)");
-        $ok = $stmt->execute([
-            ':titulo' => $titulo,
-            ':plataforma_id' => $plataforma_id,
-            ':director_id' => $director_id
-        ]);
-
-        header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Creado" : "error=No+se+pudo+guardar"));
+        $ok = $serie->guardar();
+        header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Serie+creada+exitosamente" : "error=Error+al+guardar+la+serie"));
         exit;
     }
 
@@ -64,19 +45,15 @@ class SeriesController
             exit;
         }
 
-        $pdo = db_connect();
-
-        $stmt = $pdo->prepare("SELECT id, titulo, plataforma_id, director_id FROM series WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $serie = $stmt->fetch();
+        $serie = Series::obtenerPorId($id);
 
         if (!$serie) {
-            header("Location: index.php?controller=series&action=index&error=No+existe");
+            header("Location: index.php?controller=series&action=index&error=Serie+no+encontrada");
             exit;
         }
 
-        $plataformas = $pdo->query("SELECT id, nombre FROM plataformas ORDER BY nombre")->fetchAll();
-        $directores  = $pdo->query("SELECT id, nombre, apellidos FROM directores ORDER BY nombre")->fetchAll();
+        $plataformas = Plataformas::obtenerTodos();
+        $directores  = Directores::obtenerTodos();
 
         require __DIR__ . '/../views/series/edit.php';
     }
@@ -88,23 +65,20 @@ class SeriesController
         $plataforma_id = (int)($_POST['plataforma_id'] ?? 0);
         $director_id   = (int)($_POST['director_id'] ?? 0);
 
-        if ($id <= 0 || $titulo === '' || $plataforma_id <= 0 || $director_id <= 0) {
+        if ($id <= 0) {
+            header("Location: index.php?controller=series&action=edit&id=$id&error=Identificador+de+serie+no+valido");
+            exit;
+        }
+
+        $serie = new Series($id, $titulo, $plataforma_id, $director_id);
+
+        if ($titulo === '' || $plataforma_id <= 0 || $director_id <= 0) {
             header("Location: index.php?controller=series&action=edit&id=$id&error=Datos+inválidos");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("UPDATE series
-                           SET titulo = :titulo, plataforma_id = :plataforma_id, director_id = :director_id
-                           WHERE id = :id");
-        $ok = $stmt->execute([
-            ':titulo' => $titulo,
-            ':plataforma_id' => $plataforma_id,
-            ':director_id' => $director_id,
-            ':id' => $id
-        ]);
-
-        header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Actualizado" : "error=No+se+pudo+actualizar"));
+        $ok = $serie->actualizar();
+        header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Serie+actualizada+exitosamente" : "error=Error+al+actualizar+la+serie"));
         exit;
     }
 
@@ -116,16 +90,12 @@ class SeriesController
             exit;
         }
 
-        $pdo = db_connect();
-
         try {
-            $stmt = $pdo->prepare("DELETE FROM series WHERE id = :id");
-            $ok = $stmt->execute([':id' => $id]);
-
-            header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Eliminado" : "error=No+se+pudo+eliminar"));
+            $ok = Series::eliminar($id);
+            header("Location: index.php?controller=series&action=index&" . ($ok ? "success=Serie+eliminada+exitosamente" : "error=Error+al+eliminar+la+serie"));
             exit;
         } catch (PDOException $e) {
-            header("Location: index.php?controller=series&action=index&error=No+se+puede+eliminar,+tiene+relaciones");
+            header("Location: index.php?controller=series&action=index&error=No+se+puede+eliminar+esta+serie+porque+esta+relacionada+con+otros+datos");
             exit;
         }
     }

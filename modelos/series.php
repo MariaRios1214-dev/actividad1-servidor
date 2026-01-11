@@ -48,7 +48,16 @@ class Series {
     public static function obtenerTodos() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->query("SELECT id, titulo, plataforma_id, director_id FROM series ORDER BY id DESC");
+            $sql = "
+                SELECT s.id, s.titulo,
+                       p.nombre AS plataforma,
+                       d.nombre || ' ' || d.apellidos AS director
+                FROM series s
+                JOIN plataformas p ON p.id = s.plataforma_id
+                JOIN directores d ON d.id = s.director_id
+                ORDER BY s.id DESC
+            ";
+            $stmt = $pdo->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             error_log("Error al obtener todas las series");

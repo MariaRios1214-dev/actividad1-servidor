@@ -4,22 +4,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Series</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/seriesStyles.css">
 </head>
 
 <body>
+    <a href="index.php" class="btn-home">← Home</a>
+    <a href="index.php?controller=series&action=create" class="btn-nuevo">+ Nueva serie</a>
+    
     <h1>Series</h1>
 
     <?php if (!empty($_GET['success'])): ?>
-        <p style="color:green;"><b><?= htmlspecialchars($_GET['success']) ?></b></p>
+        <div class="mensaje-exito">
+            <strong><?= htmlspecialchars($_GET['success']) ?></strong>
+        </div>
     <?php endif; ?>
 
     <?php if (!empty($_GET['error'])): ?>
-        <p style="color:red;"><b><?= htmlspecialchars($_GET['error']) ?></b></p>
+        <div class="mensaje-error">
+            <strong><?= htmlspecialchars($_GET['error']) ?></strong>
+        </div>
     <?php endif; ?>
 
-    <a href="index.php?controller=series&action=create">+ Nueva serie</a>
-
-    <table border="1" cellpadding="6" cellspacing="0" style="margin-top:10px;">
+    <table class="tabla-series">
         <tr>
             <th>ID</th>
             <th>Título</th>
@@ -35,16 +42,14 @@
                 <td><?= htmlspecialchars($r['plataforma']) ?></td>
                 <td><?= htmlspecialchars($r['director']) ?></td>
                 <td>
-                    <a href="index.php?controller=series&action=edit&id=<?= (int)$r['id'] ?>">Editar</a>
-                    |
-                    <a href="index.php?controller=series&action=delete&id=<?= (int)$r['id'] ?>"
-                        onclick="return confirm('¿Seguro que quieres eliminar?');">Eliminar</a>
+                    <a href="index.php?controller=series&action=edit&id=<?= (int)$r['id'] ?>" class="btn-editar">Editar</a>
+                    <a href="index.php?controller=series&action=delete&id=<?= (int)$r['id'] ?>" 
+                       class="btn-eliminar"
+                       onclick="return confirm('¿Seguro que quieres eliminar?');">Eliminar</a>
                 </td>
             </tr>
         <?php endforeach; ?>
     </table>
-
-    <p><a href="index.php">Home</a></p>
 </body>
 
 </html>
