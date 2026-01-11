@@ -1,0 +1,103 @@
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Open Sans', 'Helvetica Neue', Arial, sans-serif;
+    margin: 20px auto;
+    max-width: 900px;
+    text-align: center;
+    position: relative;
+}
+
+/* Botones de navegación */
+.btn-home {
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    background: #007cba;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.btn-nuevo {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #28a745;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.btn-actualizar-guardar {
+    background: #28a745;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+
+
+/* Mensajes de estado */
+.mensaje-exito {
+    color: #28a745;
+    background: #f0f8f0;
+    padding: 10px;
+    border: 1px solid #28a745;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.mensaje-error {
+    color: red;
+    background: #fff0f0;
+    padding: 10px;
+    border: 1px solid red;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+/* Tabla de directores */
+.tabla-directores {
+    margin: 20px auto;
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+    border: 1px solid #ccc;
+}
+
+.tabla-directores th {
+    padding: 8px;
+    border: 1px solid #ccc;
+    background-color: #f5f5f5;
+    text-align: left;
+}
+
+.tabla-directores td {
+    padding: 8px;
+    border: 1px solid #ccc;
+}
+
+/* Botones de acción */
+.btn-editar {
+    color: white;
+    background: #007cba;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 3px;
+    margin-right: 5px;
+    font-size: 12px;
+}
+
+.btn-eliminar {
+    color: white;
+    background: #dc3545;
+    padding: 5px 10px;
+    text-decoration: none;
+    border-radius: 3px;
+    font-size: 12px;
+}

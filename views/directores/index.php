@@ -4,22 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <title>Directores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/directorStyles.css">
 </head>
 
 <body>
+    <a href="index.php" class="btn-home">← Home</a>
+    <a href="index.php?controller=directores&action=create" class="btn-nuevo">+ Nuevo director</a>
+    
     <h1>Directores</h1>
 
     <?php if (!empty($_GET['success'])): ?>
-        <p style="color:green;"><b><?= htmlspecialchars($_GET['success']) ?></b></p>
+        <div class="mensaje-exito"><b><?= htmlspecialchars($_GET['success']) ?></b></div>
     <?php endif; ?>
 
     <?php if (!empty($_GET['error'])): ?>
-        <p style="color:red;"><b><?= htmlspecialchars($_GET['error']) ?></b></p>
+        <div class="mensaje-error"><b><?= htmlspecialchars($_GET['error']) ?></b></div>
     <?php endif; ?>
 
-    <a href="index.php?controller=directores&action=create">+ Nuevo director</a>
-
-    <table border="1" cellpadding="6" cellspacing="0" style="margin-top:10px;">
+    <table class="tabla-directores">
         <tr>
             <th>ID</th>
             <th>Nombre</th>
@@ -37,9 +40,8 @@
                 <td><?= htmlspecialchars($r['fecha_nacimiento']) ?></td>
                 <td><?= htmlspecialchars($r['nacionalidad']) ?></td>
                 <td>
-                    <a href="index.php?controller=directores&action=edit&id=<?= (int)$r['id'] ?>">Editar</a>
-                    |
-                    <a href="index.php?controller=directores&action=delete&id=<?= (int)$r['id'] ?>"
+                    <a href="index.php?controller=directores&action=edit&id=<?= (int)$r['id'] ?>" class="btn-editar">Editar</a>
+                    <a href="index.php?controller=directores&action=delete&id=<?= (int)$r['id'] ?>" class="btn-eliminar"
                         onclick="return confirm('¿Seguro que quieres eliminar?');">
                         Eliminar
                     </a>
@@ -47,8 +49,6 @@
             </tr>
         <?php endforeach; ?>
     </table>
-
-    <p><a href="index.php">Home</a></p>
 </body>
 
 </html>

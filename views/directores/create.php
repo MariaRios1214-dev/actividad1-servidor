@@ -3,10 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Crear director</title>
+    <title>Directores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/directorStyles.css">
 </head>
 
 <body>
+    <a href="index.php?controller=directores&action=index" class="btn-home">← Volver</a>
     <h1>Crear director</h1>
 
     <?php if (!empty($_GET['error'])): ?>
@@ -26,10 +29,9 @@
         <label>Nacionalidad:</label><br>
         <input type="text" name="nacionalidad" required><br><br>
 
-        <button type="submit">Guardar</button>
+        <button type="submit" class="btn-actualizar-guardar">Guardar</button>
     </form>
 
-    <p><a href="index.php?controller=directores&action=index">Volver</a></p>
 </body>
 
 </html>

@@ -3,14 +3,17 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Editar director</title>
+    <title>Directores</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/directorStyles.css">
 </head>
 
 <body>
+    <a href="index.php?controller=directores&action=index" class="btn-home">← Volver</a>
     <h1>Editar director</h1>
 
     <?php if (!empty($_GET['error'])): ?>
-        <p style="color:red;"><b><?= htmlspecialchars($_GET['error']) ?></b></p>
+        <div class="mensaje-error"><b><?= htmlspecialchars($_GET['error']) ?></b></div>
     <?php endif; ?>
 
     <form method="POST" action="index.php?controller=directores&action=update">
@@ -27,11 +30,10 @@
 
         <label>Nacionalidad:</label><br>
         <input type="text" name="nacionalidad" value="<?= htmlspecialchars($director['nacionalidad']) ?>" required><br><br>
-
-        <button type="submit">Actualizar</button>
+        
+        <button type="submit" class="btn-actualizar-guardar">Guardar</button>
     </form>
 
-    <p><a href="index.php?controller=directores&action=index">Volver</a></p>
 </body>
 
 </html>
