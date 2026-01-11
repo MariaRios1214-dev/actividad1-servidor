@@ -48,20 +48,20 @@ class Actores{
     }
     
     // Métodos de la base de datos
-    public static function getAll() {
+    public static function obtenerTodos() {
         $pdo = db_connect();
         $rows = $pdo->query("SELECT id, nombre, apellidos, fecha_nacimiento, nacionalidad FROM actores ORDER BY id DESC")->fetchAll();
         return $rows;
     }
     
-    public static function getById($id) {
+    public static function obtenerPorId($id) {
         $pdo = db_connect();
         $stmt = $pdo->prepare("SELECT id, nombre, apellidos, fecha_nacimiento, nacionalidad FROM actores WHERE id = :id");
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
     }
     
-    public function save() {
+    public function guardar() {
         $pdo = db_connect();
         $stmt = $pdo->prepare("
             INSERT INTO actores (nombre, apellidos, fecha_nacimiento, nacionalidad)
@@ -76,7 +76,7 @@ class Actores{
         ]);
     }
     
-    public function update() {
+    public function actualizar() {
         $pdo = db_connect();
         $stmt = $pdo->prepare("
             UPDATE actores
@@ -96,7 +96,7 @@ class Actores{
         ]);
     }
     
-    public static function delete($id) {
+    public static function eliminar($id) {
         try {
             $pdo = db_connect();
             $stmt = $pdo->prepare("DELETE FROM actores WHERE id = :id");
@@ -106,7 +106,7 @@ class Actores{
         }
     }
     
-    public function isValid() {
+    public function esValido() {
         return !empty(trim($this->nombre)) && 
                !empty(trim($this->apellidos)) && 
                !empty($this->fecha_nacimiento) && 

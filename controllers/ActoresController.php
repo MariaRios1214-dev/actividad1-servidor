@@ -5,7 +5,7 @@ class ActoresController
 {
     public function index()
     {
-        $rows = Actores::getAll();
+        $rows = Actores::obtenerTodos();
         require_once __DIR__ . '/../views/actores/index.php';
     }
 
@@ -23,12 +23,12 @@ class ActoresController
 
         $actor = new Actores(null, $nombre, $apellidos, $fecha_nacimiento, $nacionalidad);
 
-        if (!$actor->isValid()) {
+        if (!$actor->esValido()) {
             header("Location: index.php?controller=actores&action=create&error=Todos+los+campos+son+obligatorios");
             exit;
         }
 
-        $ok = $actor->save();
+        $ok = $actor->guardar();
         header("Location: index.php?controller=actores&action=index&" . ($ok ? "success=Actor+creado+exitosamente" : "error=Error+al+guardar+el+actor"));
         exit;
     }
@@ -41,7 +41,7 @@ class ActoresController
             exit;
         }
 
-        $actor = Actores::getById($id);
+        $actor = Actores::obtenerPorId($id);
 
         if (!$actor) {
             header("Location: index.php?controller=actores&action=index&error=Actor+no+encontrado");
@@ -66,12 +66,12 @@ class ActoresController
 
         $actor = new Actores($id, $nombre, $apellidos, $fecha_nacimiento, $nacionalidad);
 
-        if (!$actor->isValid()) {
+        if (!$actor->esValido()) {
             header("Location: index.php?controller=actores&action=edit&id=$id&error=Datos+inválidos");
             exit;
         }
 
-        $ok = $actor->update();
+        $ok = $actor->actualizar();
         header("Location: index.php?controller=actores&action=index&" . ($ok ? "success=Actor+actualizado+exitosamente" : "error=Error+al+actualizar+el+actor"));
         exit;
     }
@@ -85,7 +85,7 @@ class ActoresController
         }
 
         try {
-            $ok = Actores::delete($id);
+            $ok = Actores::eliminar($id);
             header("Location: index.php?controller=actores&action=index&" . ($ok ? "success=Actor+eliminado+exitosamente" : "error=Error+al+eliminar+el+actor"));
             exit;
         } catch (PDOException $e) {

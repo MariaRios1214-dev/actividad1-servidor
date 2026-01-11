@@ -1,13 +1,11 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../modelos/directores.php';
 
 class DirectoresController
 {
-
     public function index()
     {
-        $pdo = db_connect();
-        $rows = $pdo->query("SELECT id, nombre, apellidos, fecha_nacimiento, nacionalidad FROM directores ORDER BY id DESC")->fetchAll();
+        $rows = Directores::obtenerTodos();
         require __DIR__ . '/../views/directores/index.php';
     }
 
@@ -20,28 +18,19 @@ class DirectoresController
     {
         $nombre = trim($_POST['nombre'] ?? '');
         $apellidos = trim($_POST['apellidos'] ?? '');
-        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? null;
+        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? '';
         $nacionalidad = trim($_POST['nacionalidad'] ?? '');
 
-        if ($nombre === '' || $apellidos === '' || $fecha_nacimiento === '' || $nacionalidad === '') {
+        $director = new Directores(null, $nombre, $apellidos, $fecha_nacimiento, $nacionalidad);
+        
+        if (!$director->esValido()) {
             header("Location: index.php?controller=directores&action=create&error=Todos+los+campos+son+obligatorios");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("
-      INSERT INTO directores (nombre, apellidos, fecha_nacimiento, nacionalidad)
-      VALUES (:nombre, :apellidos, :fecha_nacimiento, :nacionalidad)
-    ");
+        $ok = $director->guardar();
 
-        $ok = $stmt->execute([
-            ':nombre' => $nombre,
-            ':apellidos' => $apellidos,
-            ':fecha_nacimiento' => $fecha_nacimiento,
-            ':nacionalidad' => $nacionalidad,
-        ]);
-
-        header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Creado" : "error=No+se+pudo+guardar"));
+        header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Director+creado+exitosamente" : "error=Error+al+guardar+el+director"));
         exit;
     }
 
@@ -53,17 +42,14 @@ class DirectoresController
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("SELECT id, nombre, apellidos, fecha_nacimiento, nacionalidad FROM directores WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $director = $stmt->fetch();
+        $director = Directores::obtenerPorId($id);
 
         if (!$director) {
-            header("Location: index.php?controller=directores&action=index&error=No+existe");
+            header("Location: index.php?controller=directores&action=index&error=Director+no+encontrado");
             exit;
         }
 
-        require __DIR__ . '/../views/directores/edit.php';
+        require_once __DIR__ . '/../views/directores/edit.php';
     }
 
     public function update()
@@ -71,33 +57,33 @@ class DirectoresController
         $id = (int)($_POST['id'] ?? 0);
         $nombre = trim($_POST['nombre'] ?? '');
         $apellidos = trim($_POST['apellidos'] ?? '');
-        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? null;
+        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? '';
         $nacionalidad = trim($_POST['nacionalidad'] ?? '');
 
-        if ($id <= 0 || $nombre === '' || $apellidos === '' || $fecha_nacimiento === '' || $nacionalidad === '') {
+        if ($id <= 0) {
+            header("Location: index.php?controller=directores&action=edit&id=$id&error=Identificador+de+director+no+valido");
+            exit;
+        }
+
+        $director = Directores::obtenerPorId($id);
+        if (!$director) {
+            header("Location: index.php?controller=directores&action=index&error=Director+no+encontrado");
+            exit;
+        }
+
+        $director->setNombre($nombre);
+        $director->setApellidos($apellidos);
+        $director->setFechaNacimiento($fecha_nacimiento);
+        $director->setNacionalidad($nacionalidad);
+
+        if (!$director->esValido()) {
             header("Location: index.php?controller=directores&action=edit&id=$id&error=Datos+inválidos");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("
-      UPDATE directores
-      SET nombre = :nombre,
-          apellidos = :apellidos,
-          fecha_nacimiento = :fecha_nacimiento,
-          nacionalidad = :nacionalidad
-      WHERE id = :id
-    ");
+        $ok = $director->actualizar();
 
-        $ok = $stmt->execute([
-            ':nombre' => $nombre,
-            ':apellidos' => $apellidos,
-            ':fecha_nacimiento' => $fecha_nacimiento,
-            ':nacionalidad' => $nacionalidad,
-            ':id' => $id,
-        ]);
-
-        header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Actualizado" : "error=No+se+pudo+actualizar"));
+        header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Director+actualizado+exitosamente" : "error=Error+al+actualizar+el+director"));
         exit;
     }
 
@@ -109,16 +95,12 @@ class DirectoresController
             exit;
         }
 
-        $pdo = db_connect();
-
         try {
-            $stmt = $pdo->prepare("DELETE FROM directores WHERE id = :id");
-            $ok = $stmt->execute([':id' => $id]);
-
-            header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Eliminado" : "error=No+se+pudo+eliminar"));
+            $ok = Directores::eliminar($id);
+            header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Director+eliminado+exitosamente" : "error=Error+al+eliminar+el+director"));
             exit;
-        } catch (PDOException $e) {
-            header("Location: index.php?controller=directores&action=index&error=No+se+puede+eliminar,+tiene+relaciones");
+        } catch (Exception $e) {
+            header("Location: index.php?controller=directores&action=index&error=" . urlencode($e->getMessage()));
             exit;
         }
     }
