@@ -4,7 +4,6 @@ require_once __DIR__ . '/../config/db.php';
 class Plataformas {
     private $id;
     private $nombre;
-    
     public function __construct($id = null, $nombre = '') {
         $this->id = $id;
         $this->nombre = $nombre;
@@ -12,11 +11,11 @@ class Plataformas {
     
     // Getters
     public function getId() {
-        return $this->id;
+        return $this->id ?? 'N/A';
     }
     
     public function getNombre() {
-        return $this->nombre;
+        return $this->nombre ?? 'N/A';
     }
     
     // Setters
@@ -24,6 +23,7 @@ class Plataformas {
         $this->nombre = $nombre;
     }
     
+    // Métodos de la base de datos
     public static function obtenerTodos() {
         try {
             $pdo = db_connect();
@@ -64,13 +64,9 @@ class Plataformas {
     public function actualizar() {
         try {
             $pdo = db_connect();
-            $stmt = $pdo->prepare("UPDATE plataformas SET nombre = :nombre
-                WHERE id = :id");
+            $stmt = $pdo->prepare("UPDATE plataformas SET nombre = :nombre WHERE id = :id");
             
-            return $stmt->execute([
-                ':nombre' => $this->nombre,
-                ':id' => $this->id,
-            ]);
+            return $stmt->execute([':nombre' => $this->nombre, ':id' => $this->id]);
         } catch (PDOException $e) {
             error_log("Error al actualizar plataforma");
             return false;

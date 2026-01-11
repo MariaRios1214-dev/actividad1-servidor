@@ -14,15 +14,15 @@ class Idiomas {
     
     // Getters
     public function getId() {
-        return $this->id;
+        return $this->id ?? 'N/A';
     }
     
     public function getNombre() {
-        return $this->nombre;
+        return $this->nombre ?? 'N/A';
     }
     
     public function getIsoCode() {
-        return $this->iso_code;
+        return $this->iso_code ?? 'N/A';
     }
     
     // Setters
