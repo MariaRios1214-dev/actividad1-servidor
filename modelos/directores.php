@@ -18,23 +18,23 @@ class Directores {
     
     // Getters
     public function getId() {
-        return $this->id;
+        return $this->id ?? 'N/A';
     }
     
     public function getNombre() {
-        return $this->nombre;
+        return $this->nombre ?? 'N/A';
     }
     
     public function getApellidos() {
-        return $this->apellidos;
+        return $this->apellidos ?? 'N/A';
     }
     
     public function getFechaNacimiento() {
-        return $this->fecha_nacimiento;
+        return $this->fecha_nacimiento ?? 'N/A';
     }
     
     public function getNacionalidad() {
-        return $this->nacionalidad;
+        return $this->nacionalidad ?? 'N/A';
     }
     
     // Setters
