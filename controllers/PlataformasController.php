@@ -1,15 +1,11 @@
 <?php
-require_once __DIR__ . '/../config/db.php';
+require_once __DIR__ . '/../modelos/plataformas.php';
 
 class PlataformasController
 {
-
     public function index()
     {
-        $pdo = db_connect();
-        $rows = $pdo->query("SELECT id, nombre FROM plataformas ORDER BY id DESC")->fetchAll();
-
-        // Pasamos $rows
+        $rows = Plataformas::obtenerTodos();
         require __DIR__ . '/../views/plataformas/index.php';
     }
 
@@ -22,16 +18,16 @@ class PlataformasController
     {
         $nombre = trim($_POST['nombre'] ?? '');
 
-        if ($nombre === '') {
-            header("Location: index.php?controller=plataformas&action=create&error=Nombre+obligatorio");
+        $plataforma = new Plataformas(null, $nombre);
+        
+        if (!$plataforma->esValido()) {
+            header("Location: index.php?controller=plataformas&action=create&error=El+nombre+es+obligatorio");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("INSERT INTO plataformas (nombre) VALUES (:nombre)");
-        $ok = $stmt->execute([':nombre' => $nombre]);
+        $ok = $plataforma->guardar();
 
-        header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Creado" : "error=No+se+pudo+guardar"));
+        header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Plataforma+creada+exitosamente" : "error=Error+al+guardar+la+plataforma"));
         exit;
     }
 
@@ -43,17 +39,14 @@ class PlataformasController
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("SELECT id, nombre FROM plataformas WHERE id = :id");
-        $stmt->execute([':id' => $id]);
-        $plataforma = $stmt->fetch();
+        $plataforma = Plataformas::obtenerPorId($id);
 
         if (!$plataforma) {
-            header("Location: index.php?controller=plataformas&action=index&error=No+existe");
+            header("Location: index.php?controller=plataformas&action=index&error=Plataforma+no+encontrada");
             exit;
         }
 
-        require __DIR__ . '/../views/plataformas/edit.php';
+        require_once __DIR__ . '/../views/plataformas/edit.php';
     }
 
     public function update()
@@ -61,16 +54,20 @@ class PlataformasController
         $id = (int)($_POST['id'] ?? 0);
         $nombre = trim($_POST['nombre'] ?? '');
 
-        if ($id <= 0 || $nombre === '') {
+        if ($id <= 0) {
+            header("Location: index.php?controller=plataformas&action=edit&id=$id&error=Identificador+de+plataforma+no+válido");
+            exit;
+        }
+
+        $plataforma = new Plataformas($id, $nombre);
+
+        if (!$plataforma->esValido()) {
             header("Location: index.php?controller=plataformas&action=edit&id=$id&error=Datos+inválidos");
             exit;
         }
 
-        $pdo = db_connect();
-        $stmt = $pdo->prepare("UPDATE plataformas SET nombre = :nombre WHERE id = :id");
-        $ok = $stmt->execute([':nombre' => $nombre, ':id' => $id]);
-
-        header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Actualizado" : "error=No+se+pudo+actualizar"));
+        $ok = $plataforma->actualizar();
+        header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Plataforma+actualizada+exitosamente" : "error=Error+al+actualizar+la+plataforma"));
         exit;
     }
 
@@ -82,17 +79,12 @@ class PlataformasController
             exit;
         }
 
-        $pdo = db_connect();
-
         try {
-            $stmt = $pdo->prepare("DELETE FROM plataformas WHERE id = :id");
-            $ok = $stmt->execute([':id' => $id]);
-
-            header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Eliminado" : "error=No+se+pudo+eliminar"));
+            $ok = Plataformas::eliminar($id);
+            header("Location: index.php?controller=plataformas&action=index&" . ($ok ? "success=Plataforma+eliminada+exitosamente" : "error=Error+al+eliminar+la+plataforma"));
             exit;
-        } catch (PDOException $e) {
-            // Relaciones al borrar (FK)
-            header("Location: index.php?controller=plataformas&action=index&error=No+se+puede+eliminar,+tiene+relaciones");
+        } catch (Exception $e) {
+            header("Location: index.php?controller=plataformas&action=index&error=No+se+puede+eliminar+la+plataforma");
             exit;
         }
     }

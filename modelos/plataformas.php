@@ -1,25 +1,107 @@
 <?php
-    class plataformas{
-        private $id;
-        private $nombre;
+require_once __DIR__ . '/../config/db.php';
 
-        public function __construct($id, $nombre){
-            $this->id = $id;
-            $this->nombre = $nombre;
-        }
-        public function getId(){
-            return $this->id;
-        }
-        public function getNombre(){
-            return $this->nombre;
-        }
-        public function setNombre($nombre){
-            if(empty($nombre)){
-                echo "No se ha registrado un nombre";
-            } else{
-                $this->nombre = $nombre;
-            }
-        }
-        
+class Plataformas {
+    private $id;
+    private $nombre;
+    
+    public function __construct($id = null, $nombre = '') {
+        $this->id = $id;
+        $this->nombre = $nombre;
     }
+    
+    // Getters
+    public function getId() {
+        return $this->id;
+    }
+    
+    public function getNombre() {
+        return $this->nombre;
+    }
+    
+    // Setters
+    public function setNombre($nombre) {
+        $this->nombre = $nombre;
+    }
+    
+    public static function obtenerTodos() {
+        try {
+            $pdo = db_connect();
+            $stmt = $pdo->query("SELECT id, nombre FROM plataformas ORDER BY id DESC");
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener todas las plataformas");
+            return [];
+        }
+    }
+    
+    public static function obtenerPorId($id) {
+        try {
+            $pdo = db_connect();
+            $stmt = $pdo->prepare("SELECT id, nombre FROM plataformas WHERE id = :id");
+            $stmt->execute([':id' => $id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error al obtener plataforma por ID");
+            return null;
+        }
+    }
+    
+    public function guardar() {
+        try {
+            $pdo = db_connect();
+            $stmt = $pdo->prepare("
+                INSERT INTO plataformas (nombre)
+                VALUES (:nombre)
+            ");
+            
+            $result = $stmt->execute([
+                ':nombre' => $this->nombre,
+            ]);
+            
+            if ($result) {
+                $this->id = $pdo->lastInsertId();
+            }
+            
+            return $result;
+        } catch (PDOException $e) {
+            error_log("Error al guardar plataforma");
+            return false;
+        }
+    }
+    
+    public function actualizar() {
+        try {
+            $pdo = db_connect();
+            $stmt = $pdo->prepare("
+                UPDATE plataformas
+                SET nombre = :nombre
+                WHERE id = :id
+            ");
+            
+            return $stmt->execute([
+                ':nombre' => $this->nombre,
+                ':id' => $this->id,
+            ]);
+        } catch (PDOException $e) {
+            error_log("Error al actualizar plataforma");
+            return false;
+        }
+    }
+    
+    public static function eliminar($id) {
+        try {
+            $pdo = db_connect();
+            $stmt = $pdo->prepare("DELETE FROM plataformas WHERE id = :id");
+            return $stmt->execute([':id' => $id]);
+        } catch (PDOException $e) {
+            error_log("Error al eliminar plataforma");
+            throw $e;
+        }
+    }
+    
+    public function esValido() {
+        return !empty(trim($this->nombre));
+    }
+}
 ?>
