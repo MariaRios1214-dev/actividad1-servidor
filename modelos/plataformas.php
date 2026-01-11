@@ -4,7 +4,6 @@ require_once __DIR__ . '/../config/db.php';
 class Plataformas {
     private $id;
     private $nombre;
-
     public function __construct($id = null, $nombre = '') {
         $this->id = $id;
         $this->nombre = $nombre;
@@ -43,7 +42,7 @@ class Plataformas {
             $stmt->execute([':id' => $id]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al obtener plataforma por ID: " . $e->getMessage());
+            error_log("Error al obtener plataforma por ID");
             return null;
         }
     }
@@ -53,15 +52,11 @@ class Plataformas {
             $pdo = db_connect();
             $stmt = $pdo->prepare("INSERT INTO plataformas (nombre) VALUES (:nombre)");
             
-            $result = $stmt->execute([':nombre' => $this->nombre]);
-            
-            if ($result) {
-                $this->id = $pdo->lastInsertId();
-            }
-            
-            return $result;
+            return $stmt->execute([
+                ':nombre' => $this->nombre,
+            ]);
         } catch (PDOException $e) {
-            error_log("Error al guardar plataforma: " . $e->getMessage());
+            error_log("Error al guardar plataforma");
             return false;
         }
     }
@@ -73,7 +68,7 @@ class Plataformas {
             
             return $stmt->execute([':nombre' => $this->nombre, ':id' => $this->id]);
         } catch (PDOException $e) {
-            error_log("Error al actualizar plataforma: " . $e->getMessage());
+            error_log("Error al actualizar plataforma");
             return false;
         }
     }
@@ -84,9 +79,13 @@ class Plataformas {
             $stmt = $pdo->prepare("DELETE FROM plataformas WHERE id = :id");
             return $stmt->execute([':id' => $id]);
         } catch (PDOException $e) {
-            error_log("Error al eliminar plataforma: " . $e->getMessage());
-            return false;
+            error_log("Error al eliminar plataforma");
+            throw $e;
         }
+    }
+    
+    public function esValido() {
+        return !empty(trim($this->nombre));
     }
 }
 ?>

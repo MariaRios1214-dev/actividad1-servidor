@@ -67,8 +67,8 @@ body {
     margin: 10px 0;
 }
 
-/* Tabla de directores */
-.tabla-directores {
+/* Tabla de series */
+.tabla-series {
     margin: 20px auto;
     border-collapse: collapse;
     width: 100%;
@@ -76,14 +76,14 @@ body {
     border: 1px solid #ccc;
 }
 
-.tabla-directores th {
+.tabla-series th {
     padding: 8px;
     border: 1px solid #ccc;
     background-color: #f5f5f5;
     text-align: left;
 }
 
-.tabla-directores td {
+.tabla-series td {
     padding: 8px;
     border: 1px solid #ccc;
 }
