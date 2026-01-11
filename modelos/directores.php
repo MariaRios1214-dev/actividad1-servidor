@@ -70,14 +70,9 @@ class Directores {
             $pdo = db_connect();
             $stmt = $pdo->prepare("SELECT id, nombre, apellidos, fecha_nacimiento, nacionalidad FROM directores WHERE id = :id");
             $stmt->execute([':id' => $id]);
-            $data = $stmt->fetch(PDO::FETCH_ASSOC);
-            
-            if ($data) {
-                return new self($data['id'], $data['nombre'], $data['apellidos'], $data['fecha_nacimiento'], $data['nacionalidad']);
-            }
-            return null;
+            return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
-            error_log("Error al obtener director por ID");
+            error_log("Error al obtener director por ID: " . $e->getMessage());
             return null;
         }
     }

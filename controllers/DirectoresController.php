@@ -57,7 +57,7 @@ class DirectoresController
         $id = (int)($_POST['id'] ?? 0);
         $nombre = trim($_POST['nombre'] ?? '');
         $apellidos = trim($_POST['apellidos'] ?? '');
-        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? '';
+        $fecha_nacimiento = $_POST['fecha_nacimiento'] ?? null;
         $nacionalidad = trim($_POST['nacionalidad'] ?? '');
 
         if ($id <= 0) {
@@ -65,16 +65,7 @@ class DirectoresController
             exit;
         }
 
-        $director = Directores::obtenerPorId($id);
-        if (!$director) {
-            header("Location: index.php?controller=directores&action=index&error=Director+no+encontrado");
-            exit;
-        }
-
-        $director->setNombre($nombre);
-        $director->setApellidos($apellidos);
-        $director->setFechaNacimiento($fecha_nacimiento);
-        $director->setNacionalidad($nacionalidad);
+        $director = new Directores($id, $nombre, $apellidos, $fecha_nacimiento, $nacionalidad);
 
         if (!$director->esValido()) {
             header("Location: index.php?controller=directores&action=edit&id=$id&error=Datos+inválidos");
@@ -82,7 +73,6 @@ class DirectoresController
         }
 
         $ok = $director->actualizar();
-
         header("Location: index.php?controller=directores&action=index&" . ($ok ? "success=Director+actualizado+exitosamente" : "error=Error+al+actualizar+el+director"));
         exit;
     }
